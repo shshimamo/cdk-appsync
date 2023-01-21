@@ -65,7 +65,7 @@ export class CdkAppsyncStack extends cdk.Stack {
     // DynamoDBアクセス権限
     itemsTableRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonDynamoDBFullAccess'));
 
-    // AppSyncデータソース
+    // AppSyncデータソース(DynamoDB)
     const dataSource = new appsync.CfnDataSource(this, 'ItemsDataSource', {
       apiId: itemsGraphQLApi.attrApiId,
       name: 'ItemsDynamoDataSource',
@@ -92,8 +92,9 @@ export class CdkAppsyncStack extends cdk.Stack {
       }`,
       responseMappingTemplate: `$util.toJson($ctx.result)`
     });
-    getOneResolver.addDependsOn(apiSchema);
+    getOneResolver.addDependency(apiSchema);
 
+    // AppSyncリゾルバー
     const getAllResolver = new appsync.CfnResolver(this, 'GetAllQueryResolver', {
       apiId: itemsGraphQLApi.attrApiId,
       typeName: 'Query',
@@ -107,8 +108,9 @@ export class CdkAppsyncStack extends cdk.Stack {
       }`,
       responseMappingTemplate: `$util.toJson($ctx.result)`
     });
-    getAllResolver.addDependsOn(apiSchema);
+    getAllResolver.addDependency(apiSchema);
 
+    // AppSyncリゾルバー
     const saveResolver = new appsync.CfnResolver(this, 'SaveMutationResolver', {
       apiId: itemsGraphQLApi.attrApiId,
       typeName: 'Mutation',
@@ -126,8 +128,9 @@ export class CdkAppsyncStack extends cdk.Stack {
       }`,
       responseMappingTemplate: `$util.toJson($ctx.result)`
     });
-    saveResolver.addDependsOn(apiSchema);
+    saveResolver.addDependency(apiSchema);
 
+    // AppSyncリゾルバー
     const deleteResolver = new appsync.CfnResolver(this, 'DeleteMutationResolver', {
       apiId: itemsGraphQLApi.attrApiId,
       typeName: 'Mutation',
@@ -142,7 +145,7 @@ export class CdkAppsyncStack extends cdk.Stack {
       }`,
       responseMappingTemplate: `$util.toJson($ctx.result)`
     });
-    deleteResolver.addDependsOn(apiSchema);
+    deleteResolver.addDependency(apiSchema);
 
   }
 }
